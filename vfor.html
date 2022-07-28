@@ -1,0 +1,62 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>vue.js</title>
+    <script src="https://cdn.staticfile.org/vue/2.4.2/vue.min.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        お名前
+        <div>
+            <input type="text" v-model="name" placeholder="お名前を入力してください" style="width: 300px;height: 40px;">
+            <button @click="add" style="width: 60px;height: 40px;">追加</button>
+        </div>
+        <ul>
+            <!-- <li v-for="(item, i) in list" :key="item.id"> -->
+            <li v-for="(item, idx) in list" :key="idx">
+                <input type="checkbox"> {{item.name}}
+            </li>
+        </ul>
+
+    </div>
+</body>
+<script>
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            name: '',
+            newId: 3,
+            list: [{
+                id: 1,
+                name: '田中'
+            }, {
+                id: 2,
+                name: '渡辺'
+            }, {
+                id: 3,
+                name: '木村'
+            }]
+        },
+        methods: {
+            add() {
+                let context = (this.name).trim() === '' ? false : true
+                if (context === false) {
+                    alert("名前を入力してください。")
+                    return
+                }
+                this.list.unshift({
+                    id: ++this.newId,
+                    name: this.name
+                })
+                this.name = ''
+                this.list.forEach(element => {
+                    console.log(element.id + ' ' + element.name)
+                });
+            }
+        }
+    });
+</script>
+
+</html>
