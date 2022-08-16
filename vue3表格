@@ -1,0 +1,124 @@
+<template>
+  <a-layout class="layout">
+    <a-layout-content
+        :style="{ background: '#fff', padding: '24px', minHeight: '280px' }">
+      <a-table :columns="columns"
+               :data-source="ebooks1"
+               :pagination="pagination"
+               :loading="loading"
+      >
+        <template #cover="{ text: cover }">
+          <img v-if="cover" :src="cover" alt="avatar"/>
+        </template>
+        <template #name="{ text: name  }">
+          <a>{{ text }}</a>
+        </template>
+        <template #customTitle>
+
+      <span>
+        <smile-outlined/>
+        Name
+      </span>
+          </template>
+          <template #action="{ record }">
+      <span>
+        <a-space size="small">
+            <a-button type="primary" @click="edit(record)">
+              编辑
+            </a-button>
+             <a-button type="danger">
+                删除
+              </a-button>
+          </a-space>
+      </span>
+          </template>
+      </a-table>
+    </a-layout-content>
+  </a-layout>
+
+</template>
+<script lang="ts">
+import {SmileOutlined, DownOutlined} from '@ant-design/icons-vue';
+import {defineComponent, onMounted, reactive, ref, toRef} from 'vue';
+import axios from 'axios';
+
+export default defineComponent({
+  name: 'AdminEbook',
+  setup() {
+    const pagination = {
+      onChange: (page: number) => {
+        console.log(page);
+      },
+      pageSize: 3,
+    };
+
+    const loading = ref(false);
+    const columns = [
+      {
+        title: '封面',
+        dataIndex: 'cover',
+        slots: {customRender: 'cover'}
+      },
+      {
+        title: '名称',
+        dataIndex: 'name'
+      },
+      {
+        title: '分类一',
+        dataIndex: 'category1Id',
+        key: 'category1Id',
+      },
+      {
+        title: '分类二',
+        dataIndex: 'category2Id',
+        key: 'category2Id',
+      },
+      {
+        title: '文档数',
+        dataIndex: 'docCount'
+      },
+      {
+        title: '阅读数',
+        dataIndex: 'viewCount'
+      },
+      {
+        title: '点赞数',
+        dataIndex: 'voteCount'
+      },
+      {
+        title: 'Action',
+        key: 'action',
+        slots: {customRender: 'action'}
+      }
+    ];
+    //使用ref进行数据绑定
+    const ebooks = ref();
+    // 使用reactive进行数据绑定
+    const ebooks1 = reactive({books: []})
+    onMounted(() => {
+      axios.get("/ebook/list?name=").then(response => {
+        const data = response.data;
+        ebooks.value = data.content;
+        ebooks1.books = data.content;
+      })
+    })
+    return {
+      pagination,
+      loading,
+      columns,
+      ebooks1: ebooks,
+      ebooks2: toRef(ebooks1, "books")
+    }
+  },
+  components: {
+    SmileOutlined,
+    DownOutlined,
+  },
+});
+</script>
+<style scoped>
+img {
+  width: 50px;
+  height: 50px;
+}
+</style>
