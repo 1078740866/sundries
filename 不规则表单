@@ -1,0 +1,126 @@
+1、<table border="1" width="1000" style = "border- text-align:margin: 0 auto;">
+
+指定table宽度、边框、以及边框合并
+
+2、给td加高度table tr td {height:50px}
+
+3、接下来说明一个思路，如果第一行的标题td不添加colspan直接写了宽度为100%的话，会规定第一行只有一列，接下来的几行不管写了多少列，规定了多少宽度，都不会生效，因此这里在第一行就规定td的colspan  = "10" width = "100%"
+
+4、接下来的每一行，如果不相同，那就按照第一行的列数，自定义列数分配给每一个格子，并且指明每一个格子的宽度，总数要与第一行相匹配。
+
+5、如果和之前定义的格式相同，那只需要给每一个td指定与之前相同的列数colspan即可
+
+代码如下：
+
+<!DOCTYPE html>
+<html>
+
+
+<head>
+    <meta http-equiv="Content-Type" content="text/回头ml; charset=utf-8" />
+    <title>付款申请单</title>
+    <link rel="stylesheet" href="css/table.css">
+</head>
+<body>
+<style>
+    h2{
+        margin:0 auto;
+        text-align: center;
+        width: 1000px;
+    }
+    table{
+        border-collapse:collapse;
+        text-align: center;
+        margin: 0 auto;
+    }
+    table span{
+        display: inline-block;
+        width: 180px;
+
+
+    }
+    table tr td {
+        height: 50px;
+    }
+    #time span{
+        width: 30px;
+    }
+     .s1 span{
+        width: 70px;
+    }
+</style>
+<h2>付款申请单</h2>
+<table border="1" width="1000">
+    <tr>
+        <td width="100%" colspan="10">
+            <span>申请付款部门：</span>
+            <span style="text-align: right">年</span>
+            <span style="text-align: center">月</span>
+            <span style="text-align: left">日</span>
+            <span style="text-align: center">经办人：</span>
+        </td>
+    </tr>
+    <tr>
+        <td width="10%" colspan="1">收款单位</td>
+        <td width="20%" colspan="2"></td>
+        <td width="10%" colspan="1">账号</td>
+        <td width="20%" colspan="2"></td>
+        <td width="10%" colspan="1">开户银行</td>
+        <td width="30%" colspan="3"></td>
+    </tr>
+    <tr>
+        <td colspan="1">收款单位</td>
+        <td colspan="2"></td>
+        <td colspan="1">账号</td>
+        <td colspan="2"></td>
+        <td colspan="1">开户银行</td>
+        <td colspan="3"></td>
+    </tr>
+    <tr>
+        <td colspan="1">付款金额</td>
+        <td colspan="9">
+        </td>
+    </tr>
+
+
+    <tr>
+        <td colspan="1">收款单位</td>
+        <td colspan="2"></td>
+        <td colspan="1">账号</td>
+        <td colspan="2"></td>
+        <td colspan="1">开户银行</td>
+        <td colspan="3"></td>
+    </tr>
+    <tr>
+        <td rowspan="2" width="10%" colspan="1">审批</td>
+        <td colspan="1" width="10%">总经理</td>
+        <td colspan="2" width="20%"></td>
+        <td colspan="1" width="10%">分管副总</td>
+        <td colspan="2" width="20%"></td>
+        <td colspan="1" width="10%">财务经理</td>
+        <td colspan="2" width="20%"></td>
+    </tr>
+
+
+    <tr>
+        <td colspan="1">总经理</td>
+        <td colspan="2"></td>
+        <td colspan="1">分管副总</td>
+        <td colspan="2"></td>
+        <td colspan="1">财务经理</td>
+        <td colspan="2"></td>
+    </tr>
+    <tr>
+        <td colspan="1">收款单位</td>
+        <td colspan="2"></td>
+        <td colspan="1">账号</td>
+        <td colspan="2"></td>
+        <td colspan="1">开户银行</td>
+        <td colspan="3"></td>
+    </tr>
+</table>
+
+</body>
+————————————————
+版权声明：本文为CSDN博主「VT柯里昂」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/weixin_42283462/article/details/80526422
