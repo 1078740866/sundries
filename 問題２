@@ -1,0 +1,127 @@
+import { defineStore } from 'pinia';
+import { Customer } from '@/store/types';
+import { axios } from '@/store';
+import { AxiosError } from 'axios';
+import {
+  isValidationError,
+  ValidationErrorDetail,
+  isErrorReponseInAxiosError
+} from '@shared/store';
+import {
+  CustomerEditShowRequest,
+  CustomerEditShowResponse,
+  CustomerEditUpdateRequest,
+  CustomerEditUpdateResponse
+} from './customerEditSample.types';
+import lodash from 'lodash';
+
+type State = {
+  viewModel: ViewModel;
+  processing: {
+    loading: boolean;
+    saving: boolean;
+  };
+  timing: {
+    loadSucceed: number;
+    loadFailed: number;
+    saveSucceed: number;
+    saveFailed: number;
+  };
+};
+
+export type ViewModel = {
+  input: {
+    customer?: Customer;
+  };
+  error: {
+    validationErrors: ValidationErrorDetail;
+  };
+};
+
+const initialState = {
+  viewModel: {
+    input: { customer: undefined },
+    error: { validationErrors: [{}] }
+  },
+  processing: {
+    loading: false,
+    saving: false
+  },
+  timing: {
+    loadSucceed: 0,
+    loadFailed: 0,
+    saveSucceed: 0,
+    saveFailed: 0
+  }
+} as State;
+
+export const useCustomerEditStore = defineStore({
+  id: 'customers/edit',
+  state: () => lodash.cloneDeep(initialState),
+  getters: {
+    getViewModel: (state: State) => () => state.viewModel,
+    isLoading: (state: State) => () => state.processing.loading,
+    loadSucceed: (state: State) => () => state.timing.loadSucceed,
+    loadFailed: (state: State) => () => state.timing.loadFailed,
+    saveSucceed: (state: State) => () => state.timing.saveSucceed,
+    saveFailed: (state: State) => () => state.timing.saveFailed
+  },
+  actions: {
+    clear() {
+      this.viewModel.input = { ...initialState }.viewModel.input;
+    },
+    async load(customerId: string) {
+      this.processing.loading = true;
+      const body: CustomerEditShowRequest = { customerId };
+      const result = (
+        await axios.post<CustomerEditShowResponse>(`/customer_edit`, body)
+      ).data;
+
+      this.processing.loading = false;
+      if (result !== undefined) {
+        this.viewModel.input = { customer: { ...result.customer } };
+        this.timing.loadSucceed++;
+      } else {
+        this.timing.loadFailed++;
+      }
+    },
+    async save() {
+      // 保存対象の customer が存在しなければエラー
+      if (!this.viewModel.input.customer) throw new Error('');
+
+      this.processing.saving = true;
+      const body: CustomerEditUpdateRequest = {
+        customer: { ...this.viewModel.input.customer }
+      };
+      const res = await axios
+        .post<CustomerEditUpdateResponse>(
+          `/customer_edit/update_customer`,
+          body
+        )
+        .catch((err: AxiosError) => {
+          if (!err.response) throw err;
+
+          if (isErrorReponseInAxiosError(err)) {
+            const errorData = err.response.data;
+            if (isValidationError(errorData)) {
+              this.viewModel.error.validationErrors = errorData.detail;
+              return;
+            }
+          }
+
+          throw err;
+        });
+      this.processing.saving = false;
+      if (res !== undefined) {
+        this.timing.saveSucceed++;
+      } else {
+        this.timing.saveFailed++;
+      }
+    },
+    clearValidationError() {
+      this.viewModel.error.validationErrors = {
+        ...initialState
+      }.viewModel.error.validationErrors;
+    }
+  }
+});
